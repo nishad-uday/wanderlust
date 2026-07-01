@@ -1,0 +1,150 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">My Bookings</h2>
+
+    <% if(bookings.length === 0){ %>
+
+        <div class="alert alert-info">
+            You have not booked any listing yet.
+        </div>
+
+    <% } else { %>
+
+        <div class="row">
+
+            <% bookings.forEach((booking)=> { %>
+
+                <%
+                    const oneDay = 1000 * 60 * 60 * 24;
+
+                    const totalDays = Math.ceil(
+                        (new Date(booking.checkOut) - new Date(booking.checkIn))
+                        / oneDay
+                    );
+
+                    const totalPrice = totalDays * booking.listing.price;
+                %>
+
+                <div class="col-md-6 mb-4">
+
+                    <div class="card shadow">
+
+                        <img
+                            src="<%= booking.listing.image.url %>"
+                            class="card-img-top"
+                            style="height:250px; object-fit:cover;"
+                        >
+
+                        <div class="card-body">
+
+                            <h4>
+                                <%= booking.listing.title %>
+                            </h4>
+
+                            <p>
+                                <b>Location :</b>
+                                <%= booking.listing.location %>,
+                                <%= booking.listing.country %>
+                            </p>
+
+                            <p>
+                                <b>Price :</b>
+                                ₹ <%= booking.listing.price.toLocaleString("en-IN") %> / Night
+                            </p>
+
+                            <hr>
+
+                            <p>
+                                <b>Check In :</b>
+                                <%= new Date(booking.checkIn).toLocaleDateString("en-IN") %>
+                            </p>
+
+                            <p>
+                                <b>Check Out :</b>
+                                <%= new Date(booking.checkOut).toLocaleDateString("en-IN") %>
+                            </p>
+
+                            <p>
+                                <b>Guests :</b>
+                                <%= booking.guests %>
+                            </p>
+
+                            <p>
+
+    <b>Status :</b>
+
+    <% if(booking.status === "Pending"){ %>
+
+        <span class="badge bg-warning text-dark">
+            Pending
+        </span>
+
+    <% } else if(booking.status === "Confirmed"){ %>
+
+        <span class="badge bg-success">
+            Confirmed
+        </span>
+
+    <% } else { %>
+
+        <span class="badge bg-danger">
+            Rejected
+        </span>
+
+    <% } %>
+
+</p>
+
+                            <hr>
+
+                            <p>
+                                <b>Total Nights :</b>
+                                <%= totalDays %> Night<%= totalDays > 1 ? "s" : "" %>
+                            </p>
+
+                            <p>
+                                <b>Total Price :</b>
+                                ₹ <%= totalPrice.toLocaleString("en-IN") %>
+                            </p>
+
+                            <p>
+                                <b>Booked On :</b>
+                                <%= new Date(booking.bookedAt).toLocaleDateString("en-IN") %>
+                            </p>
+
+                            <div class="d-flex gap-2 mt-3">
+
+                                <a
+                                    href="/listings/<%= booking.listing._id %>"
+                                    class="btn btn-primary">
+                                    View Listing
+                                </a>
+
+                                <form
+                                    action="/bookings/<%= booking._id %>?_method=DELETE"
+                                    method="POST">
+
+                                    <button
+                                        class="btn btn-danger">
+                                        Cancel Booking
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+    <% } %>
+
+</div>
